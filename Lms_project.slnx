@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Lms_project.API(2)/Lms_project.API(2).csproj" />
+  <Project Path="Lms_project.Core/Lms_project.Core.csproj" Id="72b948c4-e2e9-48e6-895e-ea6905f2633c" />
+  <Project Path="Lms_project.Infra/Lms_project.Infra.csproj" Id="7ec639f2-8836-46b9-838f-4ee02dbf0da5" />
+</Solution>
