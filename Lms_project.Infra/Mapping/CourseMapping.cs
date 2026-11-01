@@ -21,5 +21,16 @@ namespace Lms_project.API_2_.Mapping
             InstructorId=dto.InstructorId
             };
         }
+        public static Course ToEntity(this UpdateCourseDto dto)
+        {
+
+
+            return new Course
+            {
+                Title = dto.Title,
+                Price = dto.Price,
+                InstructorId = dto.InstructorId
+            };
+        }
     }
 }

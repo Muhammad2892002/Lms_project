@@ -1,4 +1,5 @@
-﻿using Lms_project.Core.Entities;
+﻿using Lms_project.Core.DTOs;
+using Lms_project.Core.Entities;
 using Lms_project.Core.Repository;
 using Lms_project.Infra.Data;
 using Microsoft.EntityFrameworkCore;
@@ -28,10 +29,17 @@ namespace Lms_project.Infra.Repository
             return true;
         }
 
-        public async Task<List<Student>> GetAllStudentsAsync()
+        public async Task<PageResult<StudentResponseDto>> GetAllStudentsAsync(int page, int pageSize)
         {
-            var allStds = await _dbContext.Students.ToListAsync();
-            return allStds;
+            var allItemsCount = await _dbContext.Students.CountAsync();
+            var allStds = await _dbContext.Students.OrderBy(std => std.Id).Skip((page-1)*pageSize).Take(pageSize)
+                .Select(std=>new StudentResponseDto(
+                  std.Id,
+                  std.FullName,
+                  std.Email,
+                  std.Phone
+                )).ToListAsync();
+            return new PageResult<StudentResponseDto>(allStds,page,pageSize, allItemsCount);
         }
 
         public Task<Student> GetStdByIdAsync(int Id)
@@ -50,6 +58,22 @@ namespace Lms_project.Infra.Repository
             return EditStd;
             
             
+        }
+        public async Task<bool?> CheckIfEmailReapeted(int Id, Student std) {
+            bool? checkEmail=null;
+            if (Id == 0)
+            {
+                 checkEmail =await _dbContext.Students.AnyAsync(stdObj => stdObj.Email == std.Email || stdObj.Phone==std.Phone);
+            }
+            else if (Id>0) {
+                checkEmail =await _dbContext.Students.AnyAsync(stdObj => (stdObj.Id != Id) && (stdObj.Email == std.Email || stdObj.Phone == std.Phone));
+
+
+            }
+            return checkEmail;
+        
+        
+        
         }
     }
 }

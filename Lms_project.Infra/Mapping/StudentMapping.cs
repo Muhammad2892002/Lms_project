@@ -16,12 +16,12 @@ namespace Lms_project.Infra.Mapping
         
         
         }
-        public static Student FromCreateDtoToEntity( this CreateStudent stdDto) {
+        public static Student FromCreateDtoToEntity( this CreateStudentDto stdDto) {
             return new Student() { FullName=stdDto.FullName,Email=stdDto.Email,Phone=stdDto.Phone };
         
         }
 
-        public static Student FromEditDtoToEntity(this EditStudent stdDto)
+        public static Student FromEditDtoToEntity(this EditStudentDto stdDto)
         {
             return new Student() {  Email = stdDto.Email, Phone = stdDto.Phone };
 

@@ -1,7 +1,9 @@
-﻿using Lms_project.Core.Entities;
+﻿using Lms_project.Core.DTOs;
+using Lms_project.Core.Entities;
 using Lms_project.Core.Repository;
 using Lms_project.Infra.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,11 +15,20 @@ namespace Lms_project.Infra.Repository
         private static readonly List<Course> _courses = [];
         public async Task<Course> CreateCourseAsync(Course course)
         {
-            await _context.AddAsync(course);
-            _context.SaveChangesAsync();
-            await _context.Entry(course).Reference(c => c.InstructorNav).LoadAsync();
-        
-            return course;
+            try
+            {
+                await _context.AddAsync(course);
+                _context.SaveChangesAsync();
+                await _context.Entry(course).Reference(c => c.InstructorNav).LoadAsync();
+
+                return course;
+            }
+            catch (DbUpdateConcurrencyException ex) {
+                throw new ArgumentException("A course with this title already exists.");
+            
+            
+            
+            }
 
         }
 
@@ -42,6 +53,18 @@ namespace Lms_project.Infra.Repository
         {
             return await  _context.Courses.Include(c=>c.InstructorNav).ToListAsync();
         }
+        public async Task<PageResult<CourseResponseDto>> GetpageAsync(FilterByPriceDto filter, int page,int pageSize )
+        {
+            var count = await _context.Courses.CountAsync();
+            var item= await _context.Courses.OrderBy(c=>c.Id).Where(c => c.Price >= filter.MinPrice && c.Price <= filter.MaxPrice).Skip((page-1)*pageSize).Take(pageSize).Select(obj => new CourseResponseDto(
+            obj.Id,
+            obj.Title,
+            obj.Price,
+            obj.Level,
+            obj.InstructorNav.FullName
+            )).ToListAsync();
+            return new PageResult<CourseResponseDto>(item, page, pageSize, count);
+        }
 
         public async Task<Course> GetCourseByIdAsync(int Id)
         {
@@ -56,7 +79,11 @@ namespace Lms_project.Infra.Repository
 
 
         }
-        
+        public async Task<int> Count() { 
+            return await _context.Courses.CountAsync();
+
+        }
+
 
     }
 }

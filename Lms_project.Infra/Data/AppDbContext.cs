@@ -10,7 +10,8 @@ namespace Lms_project.Infra.Data
     {
         public DbSet<Course> Courses => Set<Course>();
         public DbSet<Student> Students => Set<Student>();
-        public DbSet<Instructor> Instructors => Set<Instructor>();
+        //public DbSet<Instructor> Instructors => Set<Instructor>();
+        public DbSet<Instructor> Instructors { get; set; }
         public DbSet<Enrollment> Enrollments=> Set<Enrollment>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

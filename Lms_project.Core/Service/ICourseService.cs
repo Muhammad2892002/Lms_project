@@ -13,8 +13,12 @@ namespace Lms_project.Core.Service
 
         public Task<CourseResponseDto> CreateCourseAsync(CreateCourseDto dto);
 
-        public Task<Course> EditCourseAsync(int Id, Course course);
+        public Task<Course> EditCourseAsync(int Id, UpdateCourseDto course);
+        public Task<PageResult<CourseResponseDto>> GetpageAsync(FilterByPriceDto filterByPrice, int page, int pageSize);
 
         public Task<Course> DeleteCourseAsync(int Id);
+
+        public Task<int> Count();
+       
     }
 }

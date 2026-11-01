@@ -1,4 +1,5 @@
 ﻿
+using FluentValidation;
 using Lms_project.Core.DTOs;
 using Lms_project.Core.Entities;
 using Lms_project.Core.Service;
@@ -26,12 +27,26 @@ namespace Lms_project.API_2_.Controllers
             return Ok(await service.GetAllCoursesAsync());
         
         }
+        [HttpGet("CountAllCourses")]
+        public async Task<ActionResult<int>> Count() {
+            int count = await service.Count();
+
+            return Ok(new { message=$"The total number of courses is {count}"});
+        }
+        [HttpGet("Paged")]
+        //[Route("GetAllCourses")]
+        public async Task<ActionResult<PageResult<CourseResponseDto>>> GetAll([FromQuery] FilterByPriceDto filterByPrice, [FromQuery]int page=1,[FromQuery] int pageSize = 10)
+        {
+            page=Math.Max(page,1);
+            pageSize=Math.Clamp(pageSize,1,50);
+
+            return Ok(await service.GetpageAsync(filterByPrice,page, pageSize));
+        }
         [HttpGet]
         [Route("{Id:int}")]
         public async Task<ActionResult<CourseResponseDto>> GetCourseById(int Id)
         {
-            // var course = _courses.FirstOrDefault(obj=>obj.Id==Id);
-            //return course is null ?NotFound(): Ok(course);
+          
             return await service.GetCourseByIdAsync(Id);
 
 
@@ -42,25 +57,44 @@ namespace Lms_project.API_2_.Controllers
        
         public async Task<ActionResult<CourseResponseDto>> CreateCourse(CreateCourseDto course)
         {
-            //course.Id = _courses.Count() == 0 ? 1 : _courses.Max(c=>c.Id)+1;
-            //_courses.Add(course);
-            var creatingResult = await service.CreateCourseAsync(course);
-            return creatingResult != null ? Ok(creatingResult) : BadRequest("Course its not valid");
+            try
+            {
+         
+                var creatingResult = await service.CreateCourseAsync(course);
+                return creatingResult != null ? Ok(creatingResult) : BadRequest("Course its not valid");
+            }
+            catch (ArgumentException ex) {
+
+                return BadRequest(ex.Message);
+
+            }
+            catch (ValidationException ex) {
+
+                return BadRequest(ex.Errors.Select(ex => new {ex.PropertyName,ex.ErrorMessage }));
+            }
 
         }
         [HttpPut("Id:int")]
-        public async Task<ActionResult<Course>> EditCourse(int Id,Course course) {
-
-            var courseFindingResult =await service.EditCourseAsync(Id, course);
-            if (courseFindingResult != null)
+        public async Task<ActionResult<Course>> EditCourse(int Id, UpdateCourseDto course) {
+            try
             {
-             
-                return NoContent();
-            }
-            else {
 
-                return BadRequest();
-            
+                var courseFindingResult = await service.EditCourseAsync(Id, course);
+                if (courseFindingResult != null)
+                {
+
+                    return NoContent();
+                }
+                else
+                {
+
+                    return BadRequest();
+
+                }
+            }
+            catch (ValidationException ex) {
+                return BadRequest(ex.Errors.Select(x => new {x.PropertyName,x.ErrorMessage }));
+
             }
             
 
@@ -86,5 +120,6 @@ namespace Lms_project.API_2_.Controllers
         
         
         }
+      
     }
 }

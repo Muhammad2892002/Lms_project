@@ -14,6 +14,7 @@ namespace Lms_project.Infra.Data.Configuration
             builder.HasKey(c=>c.Id);
             builder.Property(c => c.Title).IsRequired().HasMaxLength(200);
             builder.HasIndex(c => c.Title).IsUnique();
+           
             builder.Property(c => c.Price).HasPrecision(10, 2);
             builder.HasOne(c => c.InstructorNav).WithMany(i => i.Courses).HasForeignKey(c => c.InstructorId).OnDelete(DeleteBehavior.Restrict);
         }

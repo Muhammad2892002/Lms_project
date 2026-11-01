@@ -1,4 +1,5 @@
-﻿using Lms_project.Core.Entities;
+﻿using Lms_project.Core.DTOs;
+using Lms_project.Core.Entities;
 using Lms_project.Core.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,13 @@ namespace Lms_project.API_2_.Controllers
     public class StudentsController(IStudentService _service) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<StudentResponseDto>>> GetAllStudents() {
+        public async Task<ActionResult<List<StudentResponseDto>>> GetAllStudents([FromQuery]int page=1,[FromQuery]int pageSize=10) {
             try
             {
+                page = Math.Max(page, 1);
+                pageSize = Math.Clamp(pageSize, 1, 50);
 
-                var allStds = await _service.GetAllStudentsAsync();
+                var allStds = await _service.GetAllStudentsAsync(page, pageSize);
                 return Ok(allStds);
             }
             catch (Exception ex) {
@@ -38,7 +41,7 @@ namespace Lms_project.API_2_.Controllers
         
         }
         [HttpPost]
-        public async Task<ActionResult<StudentResponseDto>> CreateStd(CreateStudent studentDto) {
+        public async Task<ActionResult<StudentResponseDto>> CreateStd(CreateStudentDto studentDto) {
             var std = await _service.CreateStdAsync(studentDto);
             if (std != null)
             {
@@ -55,7 +58,7 @@ namespace Lms_project.API_2_.Controllers
         }
         [HttpPut]
         [Route("{Id:int}")]
-        public async Task<ActionResult<StudentResponseDto>>EditStd(int Id, EditStudent std){
+        public async Task<ActionResult<StudentResponseDto>>EditStd(int Id, EditStudentDto std){
             var editStd = await _service.UpdateStdAsync(Id,std);
             if (editStd != null)
             {
@@ -81,6 +84,13 @@ namespace Lms_project.API_2_.Controllers
             
             }
         
+        }
+        [HttpGet("GetAllEnrolledCoursesForStd/{stdId:int}")]
+
+        public async Task<ActionResult<List<GetAllEnrolledCourses>>> GetAllEnrolledCoursesForStd(int stdId)
+        {
+            var allEnrolledCourses = await _service.GetAllEnrolledCoursesForStd(stdId);
+            return Ok(allEnrolledCourses);
         }
 
     }

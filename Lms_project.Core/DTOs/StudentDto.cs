@@ -13,8 +13,8 @@ namespace Lms_project.Core.DTOs
     //public List<Enrollment> Enrollments { get; set; } = [];
     public class StudentDto
     {
-        public record CreateStudent(string FullName,string Email,string Phone);
-        public record EditStudent( string Email, string Phone);
+        public record CreateStudentDto(string FullName,string Email,string Phone);
+        public record EditStudentDto( string Email, string Phone);
 
         public record StudentResponseDto(int Id,string FullName,string Email,string Phone);
 
