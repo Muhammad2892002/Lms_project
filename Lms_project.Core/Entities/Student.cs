@@ -11,6 +11,8 @@ namespace Lms_project.Core.Entities
 
         public string Email { get; set; }
         public string? Phone { get; set; }
+        public int? UserId { get; set; }
+        public User? UserNavigation { get; set; }
         public List<Enrollment> Enrollments { get; set; } = [];
 
 

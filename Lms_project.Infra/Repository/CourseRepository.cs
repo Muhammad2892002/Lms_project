@@ -55,7 +55,7 @@ namespace Lms_project.Infra.Repository
         }
         public async Task<PageResult<CourseResponseDto>> GetpageAsync(FilterByPriceDto filter, int page,int pageSize )
         {
-            var count = await _context.Courses.CountAsync();
+            var count = await _context.Courses.Where(c => c.Price >= filter.MinPrice && c.Price <= filter.MaxPrice).CountAsync();
             var item= await _context.Courses.OrderBy(c=>c.Id).Where(c => c.Price >= filter.MinPrice && c.Price <= filter.MaxPrice).Skip((page-1)*pageSize).Take(pageSize).Select(obj => new CourseResponseDto(
             obj.Id,
             obj.Title,
@@ -63,6 +63,7 @@ namespace Lms_project.Infra.Repository
             obj.Level,
             obj.InstructorNav.FullName
             )).ToListAsync();
+          
             return new PageResult<CourseResponseDto>(item, page, pageSize, count);
         }
 

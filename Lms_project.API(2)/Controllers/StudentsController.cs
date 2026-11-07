@@ -1,6 +1,7 @@
 ﻿using Lms_project.Core.DTOs;
 using Lms_project.Core.Entities;
 using Lms_project.Core.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static Lms_project.Core.DTOs.StudentDto;
@@ -9,6 +10,7 @@ namespace Lms_project.API_2_.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = Roles.Admin)]
     public class StudentsController(IStudentService _service) : ControllerBase
     {
         [HttpGet]

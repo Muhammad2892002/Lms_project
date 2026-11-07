@@ -10,15 +10,15 @@ namespace Lms_project.API_2_.Midlleware
    ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(
-    HttpContext context, Exception exception, CancellationToken ct)
+HttpContext context, Exception exception, CancellationToken ct)
         {
             var (status, title) = exception switch
             {
                 ValidationException => (400, "Validation failed"),
-                
+
                 NotFoundException => (404, "Resource not found"),
                 ConflictException => (409, "Conflict"),
-             
+
                 _ => (500, "An unexpected error occurred")
             };
             if (status == 500) logger.LogError(exception, "Unhandled exception");
@@ -35,5 +35,5 @@ namespace Lms_project.API_2_.Midlleware
             return await problemDetails.TryWriteAsync(new() { HttpContext = context, ProblemDetails = problem });
         }
     }
+}
 
-    }

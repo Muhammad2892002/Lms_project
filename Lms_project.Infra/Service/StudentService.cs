@@ -88,5 +88,29 @@ namespace Lms_project.Infra.Service
 
         }
 
+        public async Task<StudentResponseDto> GetStdByUserIdAsync(int Id) { 
+          
+            var std = await _stdRepo.GetStdByUserIdAsync(Id);
+            if (std == null)
+            {
+                throw new NotFoundException($"student who has this userId:{Id} doesnot exist");
+            }
+            return std.ToResponseDto();
+
+
+        }
+
+        public async Task<List<GetAllEnrolledCourses>> TaskGetAllEnrolledCourseByUserId(int userId) { 
+            var std = await _stdRepo.GetStdByUserIdAsync(userId);
+            if (std == null)
+            {
+                throw new NotFoundException($"student who has this userId:{userId} doesnot exist");
+            }
+            return await _enrollmentRepo.GetAllEnrolledCoursesForStd(std.Id);
+
+        }
+
+        
+
     }
 }

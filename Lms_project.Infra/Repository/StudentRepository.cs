@@ -42,9 +42,9 @@ namespace Lms_project.Infra.Repository
             return new PageResult<StudentResponseDto>(allStds,page,pageSize, allItemsCount);
         }
 
-        public Task<Student> GetStdByIdAsync(int Id)
+        public async Task<Student> GetStdByIdAsync(int Id)
         {
-            var std = _dbContext.Students.FirstOrDefaultAsync(stdObj => stdObj.Id == Id);
+            var std =await _dbContext.Students.FirstOrDefaultAsync(stdObj => stdObj.Id == Id);
             return std;
         }
 
@@ -75,5 +75,13 @@ namespace Lms_project.Infra.Repository
         
         
         }
+
+        public async Task<Student> GetStdByUserIdAsync(int Id)
+        {
+            var std = await _dbContext.Students.FirstOrDefaultAsync(stdObj => stdObj.UserId == Id);
+            return std;
+        }
+
+
     }
 }

@@ -16,6 +16,8 @@ namespace Lms_project.Core.Service
      
         public Task<bool> DeleteStdAsync(int Id);
         public Task<List<GetAllEnrolledCourses>> GetAllEnrolledCoursesForStd(int stdId);
+        public Task<StudentResponseDto> GetStdByUserIdAsync(int Id);
+        public Task<List<GetAllEnrolledCourses>> TaskGetAllEnrolledCourseByUserId(int userId);
 
 
 

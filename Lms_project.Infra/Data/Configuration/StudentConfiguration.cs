@@ -13,6 +13,7 @@ namespace Lms_project.Infra.Data.Configuration
         {
            
             builder.HasIndex(std => std.Email).IsUnique();
+            builder.HasIndex(std=>std.UserId).IsUnique();
             builder.Property(std => std.FullName).IsRequired();
             
            

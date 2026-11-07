@@ -1,15 +1,21 @@
 using FluentValidation;
 using Lms_project.API_2_.Midlleware;
 using Lms_project.Core.Repository;
+using Lms_project.Core.Security;
 using Lms_project.Core.Service;
 using Lms_project.Core.Validators.CourseValidator;
 using Lms_project.Core.Validators.EnrollmentValidator;
 using Lms_project.Core.Validators.StudentValidator;
 using Lms_project.Infra.Data;
 using Lms_project.Infra.Repository;
+using Lms_project.Infra.Security;
 using Lms_project.Infra.Service;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,12 +34,26 @@ builder.Services.AddSwaggerGen(options => {
 
     });
 });
+/*DI Here */
+
+
+
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IStudentRepository,StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IPasswordHash, BcryptPaswordHasher>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+
+
+
+
+//--------------------------------------------------------------------------------------
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCourseDtoValidators>();
 builder.Services.AddValidatorsFromAssemblyContaining<EditCourseDtoValidator>();
@@ -42,6 +62,24 @@ builder.Services.AddValidatorsFromAssemblyContaining<EditStudentDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEnrollmentValidator>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+var jwt=builder.Configuration.GetSection("jwt").Get<JwtSetting>();
+builder.Services.Configure<JwtSetting>(builder.Configuration.GetSection("jwt"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+    options=>options.TokenValidationParameters=new TokenValidationParameters { 
+      ValidateIssuer = true,
+      ValidateAudience=true,
+      ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwt.Issuer,
+        ValidAudience = jwt.Audiance,
+        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+        ClockSkew=TimeSpan.FromMinutes(1)
+
+
+    }
+    
+    );
+builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
@@ -64,6 +102,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -16,6 +16,7 @@ namespace Lms_project.Core.Repository
 
         public Task<bool> DeleteStdAsync(int Id);
         public Task<bool?> CheckIfEmailReapeted(int Id, Student std);
+        public  Task<Student> GetStdByUserIdAsync(int Id);
 
     }
 }

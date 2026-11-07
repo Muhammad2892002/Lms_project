@@ -120,12 +120,48 @@ namespace Lms_project.Infra.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("Lms_project.Core.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Lms_project.Core.Entities.Course", b =>
@@ -156,6 +192,15 @@ namespace Lms_project.Infra.Migrations
                     b.Navigation("CourseNav");
 
                     b.Navigation("StudentNav");
+                });
+
+            modelBuilder.Entity("Lms_project.Core.Entities.Student", b =>
+                {
+                    b.HasOne("Lms_project.Core.Entities.User", "UserNavigation")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("UserNavigation");
                 });
 
             modelBuilder.Entity("Lms_project.Core.Entities.Course", b =>

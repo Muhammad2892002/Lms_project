@@ -71,7 +71,9 @@ namespace Lms_project.Infra.Repository
 
         public async Task<List<GetAllEnrolledCourses>> GetAllEnrolledCoursesForStd(int stdId) {
             var allEnrolledCourses = await _context.Enrollments.Where(obj => obj.StudentId == stdId)
-                    .Select(obj => new GetAllEnrolledCourses(obj.CourseNav.Title,obj.CourseNav.Level,obj.CourseNav.Price, obj.StudentNav.FullName,obj.StudentNav.Email, obj.EnrolledAt)).ToListAsync();
+                    .Select(obj => new GetAllEnrolledCourses(obj.CourseNav.Title,obj.CourseNav.Level,
+                    obj.CourseNav.Price,
+                    obj.StudentNav.FullName,obj.StudentNav.Email, obj.EnrolledAt)).ToListAsync();
             return allEnrolledCourses;
 
         }

@@ -10,6 +10,7 @@ namespace Lms_project.Infra.Data
     {
         public DbSet<Course> Courses => Set<Course>();
         public DbSet<Student> Students => Set<Student>();
+        public DbSet<User> Users => Set<User>();
         //public DbSet<Instructor> Instructors => Set<Instructor>();
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<Enrollment> Enrollments=> Set<Enrollment>();
@@ -40,7 +41,18 @@ namespace Lms_project.Infra.Data
 
                         );
                 }
+                if (!context.Set<User>().Any()) {
+                    context.Set<User>().Add(
+                        new User() { Email="admin@ex.com",Role = Roles.Admin,PasswordHash=BCrypt.Net.BCrypt.HashPassword("Admin@123") }
+                        
+                        );
                 
+                
+                
+                
+                }
+                
+
                 context.SaveChanges();
 
 
