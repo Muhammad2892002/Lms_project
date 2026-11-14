@@ -45,6 +45,7 @@ namespace Lms_project.Infra.Repository
             courseFindingResult.Title = course.Title;
             courseFindingResult.Price = course.Price;
             courseFindingResult.Level = course.Level;
+            courseFindingResult.ImageUrl = course.ImageUrl;
             _context.SaveChangesAsync();
             return courseFindingResult;
         }
@@ -61,7 +62,8 @@ namespace Lms_project.Infra.Repository
             obj.Title,
             obj.Price,
             obj.Level,
-            obj.InstructorNav.FullName
+            obj.InstructorNav.FullName,
+            obj.ImageUrl
             )).ToListAsync();
           
             return new PageResult<CourseResponseDto>(item, page, pageSize, count);
@@ -82,6 +84,12 @@ namespace Lms_project.Infra.Repository
         }
         public async Task<int> Count() { 
             return await _context.Courses.CountAsync();
+
+        }
+
+        public async Task<bool> CheckIfImgUsed(string imgUrl) { 
+           var imgCheckingResult = await _context.Courses.AnyAsync(c => c.ImageUrl == imgUrl);
+            return imgCheckingResult;
 
         }
 

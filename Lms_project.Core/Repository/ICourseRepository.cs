@@ -19,5 +19,6 @@ namespace Lms_project.Core.Repository
         public bool isCourseValid(Course course);
         public Task<PageResult<CourseResponseDto>> GetpageAsync(FilterByPriceDto filter, int page, int pageSize);
         public Task<int> Count();
+        public Task<bool> CheckIfImgUsed(string imgUrl);
     }
 }

@@ -3,6 +3,7 @@ using Lms_project.API_2_.Midlleware;
 using Lms_project.Core.Repository;
 using Lms_project.Core.Security;
 using Lms_project.Core.Service;
+using Lms_project.Core.Storage;
 using Lms_project.Core.Validators.CourseValidator;
 using Lms_project.Core.Validators.EnrollmentValidator;
 using Lms_project.Core.Validators.StudentValidator;
@@ -10,12 +11,16 @@ using Lms_project.Infra.Data;
 using Lms_project.Infra.Repository;
 using Lms_project.Infra.Security;
 using Lms_project.Infra.Service;
+using Lms_project.Infra.Storage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi;
 using System.Text;
+using Twilio.TwiML.Voice;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +53,11 @@ builder.Services.AddSingleton<IPasswordHash, BcryptPaswordHasher>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<IImageService, ImageService>();
+builder.Services.AddHttpClient<ICurrencyService, CurrencyService>(client => {
+    client.BaseAddress = new Uri($"{builder.Configuration["ExchangeUrl:BaseUrl"]}{builder.Configuration["ExchangeRate:ApiKey"]}/");
+
+});
 
 
 
@@ -62,7 +72,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<EditStudentDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEnrollmentValidator>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-var jwt=builder.Configuration.GetSection("jwt").Get<JwtSetting>();
+//------------------------------------------------------------------------- JWT Authentication and Authorization Configuration
+var jwt =builder.Configuration.GetSection("jwt").Get<JwtSetting>();
 builder.Services.Configure<JwtSetting>(builder.Configuration.GetSection("jwt"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
     options=>options.TokenValidationParameters=new TokenValidationParameters { 
@@ -80,6 +91,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     
     );
 builder.Services.AddAuthorization();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token"
+    });
+
+    options.AddSecurityRequirement(document =>
+        new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+        });
+});
 
 
 var app = builder.Build();
@@ -102,6 +131,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseAuthentication();
 
 app.UseAuthorization();

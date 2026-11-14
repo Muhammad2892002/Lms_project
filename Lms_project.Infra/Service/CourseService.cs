@@ -74,6 +74,16 @@ namespace Lms_project.Infra.Service
 
         }
 
+        public async Task<bool> CheckIfImgUsed(string imgUrl) { 
+            var imgCheckingResult = await courseRepo.CheckIfImgUsed(imgUrl);
+            if (imgCheckingResult)
+                throw new BadRequestException($"This image is already used by another course");
+            
+
+            return imgCheckingResult;
+
+        }
+
 
     }
 }

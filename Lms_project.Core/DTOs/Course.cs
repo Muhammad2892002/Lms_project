@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Lms_project.Core.DTOs
 {
-    public record CreateCourseDto(string Title, decimal Price, int InstructorId);
-    public record UpdateCourseDto(string Title, decimal Price, int InstructorId);
-    public record CourseResponseDto(int Id,string Title, decimal Price,int Level, string ? InstructorName);
+    public record CreateCourseDto(string Title, decimal Price, int InstructorId,string? ImgUrl);
+    public record UpdateCourseDto(string Title, decimal Price, int InstructorId, string? ImgUrl);
+    public record CourseResponseDto(int Id,string Title, decimal Price,int Level, string ? InstructorName, string? ImgUrl);
 
 }

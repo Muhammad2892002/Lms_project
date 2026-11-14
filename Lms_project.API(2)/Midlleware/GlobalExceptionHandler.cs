@@ -15,6 +15,7 @@ HttpContext context, Exception exception, CancellationToken ct)
             var (status, title) = exception switch
             {
                 ValidationException => (400, "Validation failed"),
+                InvalidFileException => (400, exception.Message),
 
                 NotFoundException => (404, "Resource not found"),
                 ConflictException => (409, "Conflict"),
@@ -27,7 +28,9 @@ HttpContext context, Exception exception, CancellationToken ct)
             {
                 Status = status,
                 Title = title,
-                Detail = exception is NotFoundException or ConflictException ? exception.Message : null
+                Detail = exception is NotFoundException or ConflictException ? exception.Message : null,
+                
+               
             };
             if (exception is ValidationException ve)
                 problem.Extensions["errors"] = ve.Errors.GroupBy(e => e.PropertyName)

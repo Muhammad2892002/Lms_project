@@ -30,6 +30,9 @@ namespace Lms_project.Infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
                     b.Property<int>("InstructorId")
                         .HasColumnType("integer");
 
