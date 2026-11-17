@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Lms_project.Infra\Lms_project.Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\coureses\" />
+  </ItemGroup>
+
 </Project>

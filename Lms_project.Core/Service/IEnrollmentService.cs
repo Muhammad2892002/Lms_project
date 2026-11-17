@@ -1,4 +1,5 @@
 ﻿using Lms_project.Core.DTOs;
+using Lms_project.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,9 @@ namespace Lms_project.Core.Service
         public Task<ShowEnrollmentDto> GetEnrollmentById(int Id);
         public Task<ShowEnrollmentDto> AddNewEnrollment(CreateEnrollment enrollmentDto);
         public Task<string> UpdateEnrollment(int Id, int CourseId);
+       
         public Task<string> DeleteEnrollment(int Id);
+       
        
     }
 }

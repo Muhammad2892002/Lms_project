@@ -1,5 +1,6 @@
 ﻿using Lms_project.Core.DTOs;
 using Lms_project.Core.Entities;
+using Lms_project.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,5 +18,7 @@ namespace Lms_project.Core.Repository
         public Task<bool> CheckIfStudentEnrolled(int studentId, int courseId);
         public Task<bool> CheckIfStudentEnrolledInCourse(int Id, int studentId, int courseId);
         public Task<List<GetAllEnrolledCourses>> GetAllEnrolledCoursesForStd(int stdId);
+        public Task<bool> ChangeEnrollmentStatus(Enrollment enrollment);
+        public Task<bool> CheckEnrollmentStatus(int Id, EnrollmentStatus status);
     }
 }

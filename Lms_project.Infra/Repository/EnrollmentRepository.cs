@@ -1,5 +1,6 @@
 ﻿using Lms_project.Core.DTOs;
 using Lms_project.Core.Entities;
+using Lms_project.Core.Enums;
 using Lms_project.Core.Exceptions;
 using Lms_project.Core.Repository;
 using Lms_project.Infra.Data;
@@ -34,7 +35,7 @@ namespace Lms_project.Infra.Repository
 
         public async  Task<List<ShowEnrollmentDto>> GetAllEnrollments()
         {
-            var allEnrollments=await _context.Enrollments.Select(obj=> new ShowEnrollmentDto(obj.Id,obj.CourseNav.Title,obj.StudentNav.FullName,obj.EnrolledAt)).ToListAsync();
+            var allEnrollments=await _context.Enrollments.Select(obj=> new ShowEnrollmentDto(obj.Id,obj.CourseNav.Title,obj.StudentNav.FullName,obj.EnrolledAt, string.IsNullOrEmpty(obj.EnrollmentStatus.ToString()) ? EnrollmentStatus.Pending.ToString() : obj.EnrollmentStatus.ToString(),obj.CourseNav.Price)).ToListAsync();
             return allEnrollments;
         }
 
@@ -73,9 +74,19 @@ namespace Lms_project.Infra.Repository
             var allEnrolledCourses = await _context.Enrollments.Where(obj => obj.StudentId == stdId)
                     .Select(obj => new GetAllEnrolledCourses(obj.CourseNav.Title,obj.CourseNav.Level,
                     obj.CourseNav.Price,
-                    obj.StudentNav.FullName,obj.StudentNav.Email, obj.EnrolledAt)).ToListAsync();
+                    obj.StudentNav.FullName,obj.StudentNav.Email, obj.EnrolledAt,string.IsNullOrEmpty(obj.EnrollmentStatus.ToString())?EnrollmentStatus.Pending.ToString():obj.EnrollmentStatus.ToString(),obj.CourseNav.Price,obj.Id)).ToListAsync();
             return allEnrolledCourses;
 
+        }
+        public async Task<bool> ChangeEnrollmentStatus(Enrollment enrollment) {
+            _context.Enrollments.Update(enrollment);
+            await _context.SaveChangesAsync();
+            return true;
+        
+        }
+        public async Task<bool> CheckEnrollmentStatus(int Id, EnrollmentStatus status) {
+            return await _context.Enrollments.AnyAsync(obj=>obj.Id==Id&& obj.EnrollmentStatus==status);
+        
         }
     }
 }

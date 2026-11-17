@@ -9,7 +9,7 @@ namespace Lms_project.API_2_.Mapping
         {
 
 
-            return new CourseResponseDto(course.Id, course.Title, course.Price, course.Level, course.InstructorNav?.FullName);
+            return new CourseResponseDto(course.Id, course.Title, course.Price, course.Level, course.InstructorNav?.FullName,course.ImageUrl);
         }
         public static Course ToEntity(this CreateCourseDto dto)
         {
@@ -18,7 +18,8 @@ namespace Lms_project.API_2_.Mapping
             return new Course { 
             Title=dto.Title,
             Price=dto.Price,
-            InstructorId=dto.InstructorId
+            InstructorId=dto.InstructorId,
+            ImageUrl=dto.ImgUrl
             };
         }
         public static Course ToEntity(this UpdateCourseDto dto)
@@ -29,7 +30,9 @@ namespace Lms_project.API_2_.Mapping
             {
                 Title = dto.Title,
                 Price = dto.Price,
-                InstructorId = dto.InstructorId
+                InstructorId = dto.InstructorId,
+                ImageUrl=dto.ImgUrl
+                
             };
         }
     }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Lms_project.Core.DTOs;
+using Lms_project.Core.Enums;
 using Lms_project.Core.Exceptions;
 using Lms_project.Core.Repository;
 using Lms_project.Core.Service;
@@ -34,7 +35,7 @@ namespace Lms_project.Infra.Service
             {
                 throw new NotFoundException(msg);
             }
-            var enrollmentAsEntity=enrollmentDto.ToEntity();
+            var enrollmentAsEntity=enrollmentDto.ToEntity(checkCourse.Price);
            var addingResult= await _repo.AddNewEnrollment(enrollmentAsEntity);
            return addingResult.ToDto();
         }
@@ -47,6 +48,9 @@ namespace Lms_project.Infra.Service
             var deletingResult = await _repo.DeleteEnrollment(Id);
             if (string.IsNullOrEmpty(deletingResult)) {
                 throw new NotFoundException("The enrollment may be deleted or does not exist");
+            }
+            if (await _repo.CheckEnrollmentStatus(Id, EnrollmentStatus.Paid)) {
+                throw new ConflictException("You cannot delete paid enrollment");
             }
             return deletingResult;
         }

@@ -19,6 +19,7 @@ namespace Lms_project.Core.Service
         public Task<Course> DeleteCourseAsync(int Id);
 
         public Task<int> Count();
+        public Task<bool> CheckIfImgUsed(string imgUrl);
        
     }
 }
