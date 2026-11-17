@@ -74,6 +74,9 @@ namespace Lms_project.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<int>("EnrollmentStatus")
+                        .HasColumnType("integer");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
@@ -102,6 +105,53 @@ namespace Lms_project.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Instructors");
+                });
+
+            modelBuilder.Entity("Lms_project.Core.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("USD");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PayPalOrderId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("PayPalOrderId")
+                        .IsUnique();
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Lms_project.Core.Entities.Student", b =>
@@ -197,6 +247,17 @@ namespace Lms_project.Infra.Migrations
                     b.Navigation("StudentNav");
                 });
 
+            modelBuilder.Entity("Lms_project.Core.Entities.Payment", b =>
+                {
+                    b.HasOne("Lms_project.Core.Entities.Enrollment", "EnrollmentNav")
+                        .WithMany("Payments")
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EnrollmentNav");
+                });
+
             modelBuilder.Entity("Lms_project.Core.Entities.Student", b =>
                 {
                     b.HasOne("Lms_project.Core.Entities.User", "UserNavigation")
@@ -209,6 +270,11 @@ namespace Lms_project.Infra.Migrations
             modelBuilder.Entity("Lms_project.Core.Entities.Course", b =>
                 {
                     b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("Lms_project.Core.Entities.Enrollment", b =>
+                {
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Lms_project.Core.Entities.Instructor", b =>

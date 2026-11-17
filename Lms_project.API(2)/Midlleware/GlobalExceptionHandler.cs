@@ -2,6 +2,8 @@
 using Lms_project.Core.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using HttpRequestException = System.Net.Http.HttpRequestException;
+
 
 namespace Lms_project.API_2_.Midlleware
 {
@@ -19,6 +21,7 @@ HttpContext context, Exception exception, CancellationToken ct)
 
                 NotFoundException => (404, "Resource not found"),
                 ConflictException => (409, "Conflict"),
+                HttpRequestException => (503, "Http Request Exception"),
 
                 _ => (500, "An unexpected error occurred")
             };
@@ -28,9 +31,9 @@ HttpContext context, Exception exception, CancellationToken ct)
             {
                 Status = status,
                 Title = title,
-                Detail = exception is NotFoundException or ConflictException ? exception.Message : null,
-                
-               
+                Detail = exception.Message,
+
+
             };
             if (exception is ValidationException ve)
                 problem.Extensions["errors"] = ve.Errors.GroupBy(e => e.PropertyName)

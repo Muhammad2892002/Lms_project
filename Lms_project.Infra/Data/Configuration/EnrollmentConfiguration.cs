@@ -12,10 +12,11 @@ namespace Lms_project.Infra.Data.Configuration
         public void Configure(EntityTypeBuilder<Enrollment> builder)
         {
             builder.HasKey(en => en.Id);
-            builder.HasIndex(obj=>new { obj.StudentId,obj.CourseId}).IsUnique();
-            builder.HasOne(enroll => enroll.CourseNav).WithMany(course => course.Enrollments).HasForeignKey(enrollObj=> enrollObj.CourseId);
+            builder.HasIndex(obj => new { obj.StudentId, obj.CourseId }).IsUnique();
+            builder.HasOne(enroll => enroll.CourseNav).WithMany(course => course.Enrollments).HasForeignKey(enrollObj => enrollObj.CourseId);
             builder.HasOne(enroll => enroll.StudentNav).WithMany(std => std.Enrollments).HasForeignKey(enroll => enroll.StudentId);
             builder.Property(e => e.EnrolledAt).HasDefaultValueSql("now()");
+            builder.Property(e => e.EnrollmentStatus).HasConversion<string>();
 
         }
     }

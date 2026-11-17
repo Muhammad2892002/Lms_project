@@ -20,40 +20,42 @@ namespace Lms_project.API_2_.Controllers
 
         //    _courseService = service;
         //}
-       
-       
-         
+
+
+
         [HttpGet]
         [Authorize(Roles = Roles.Admin)]
         //[Route("GetAllCourses")]
-        public async Task<ActionResult<List<CourseResponseDto>>> GetAllCourses() {
-           
+        public async Task<ActionResult<List<CourseResponseDto>>> GetAllCourses()
+        {
+
             return Ok(await service.GetAllCoursesAsync());
-        
+
         }
         [HttpGet("CountAllCourses")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<int>> Count() {
+        public async Task<ActionResult<int>> Count()
+        {
             int count = await service.Count();
 
-            return Ok(new { message=$"The total number of courses is {count}"});
+            return Ok(new { message = $"The total number of courses is {count}" });
         }
         [HttpGet("Paged")]
         [Authorize(Roles = Roles.Admin)]
         //[Route("GetAllCourses")]
-        public async Task<ActionResult<PageResult<CourseResponseDto>>> GetAll([FromQuery] FilterByPriceDto filterByPrice, [FromQuery]int page=1,[FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PageResult<CourseResponseDto>>> GetAll([FromQuery] FilterByPriceDto filterByPrice, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            page=Math.Max(page,1);
-            pageSize=Math.Clamp(pageSize,1,50);
+            page = Math.Max(page, 1);
+            pageSize = Math.Clamp(pageSize, 1, 50);
 
-            return Ok(await service.GetpageAsync(filterByPrice,page, pageSize));
+            return Ok(await service.GetpageAsync(filterByPrice, page, pageSize));
         }
         [HttpGet]
         [Authorize(Roles = Roles.Admin)]
         [Route("{Id:int}")]
         public async Task<ActionResult<CourseResponseDto>> GetCourseById(int Id)
         {
-          
+
             return await service.GetCourseByIdAsync(Id);
 
 
@@ -67,24 +69,27 @@ namespace Lms_project.API_2_.Controllers
         {
             try
             {
-         
+
                 var creatingResult = await service.CreateCourseAsync(course);
                 return creatingResult != null ? Ok(creatingResult) : BadRequest("Course its not valid");
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException ex)
+            {
 
                 return BadRequest(ex.Message);
 
             }
-            catch (ValidationException ex) {
+            catch (ValidationException ex)
+            {
 
-                return BadRequest(ex.Errors.Select(ex => new {ex.PropertyName,ex.ErrorMessage }));
+                return BadRequest(ex.Errors.Select(ex => new { ex.PropertyName, ex.ErrorMessage }));
             }
 
         }
         [HttpPut("Id:int")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<Course>> EditCourse(int Id, UpdateCourseDto course) {
+        public async Task<ActionResult<Course>> EditCourse(int Id, UpdateCourseDto course)
+        {
             try
             {
 
@@ -101,40 +106,44 @@ namespace Lms_project.API_2_.Controllers
 
                 }
             }
-            catch (ValidationException ex) {
-                return BadRequest(ex.Errors.Select(x => new {x.PropertyName,x.ErrorMessage }));
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Errors.Select(x => new { x.PropertyName, x.ErrorMessage }));
 
             }
-            
 
-          
-        
-        
-        
+
+
+
+
+
         }
         [HttpDelete]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult<Course>> DeleteCourse(int Id) {
-            var searchForCourse =await  service.DeleteCourseAsync(Id);
+        public async Task<ActionResult<Course>> DeleteCourse(int Id)
+        {
+            var searchForCourse = await service.DeleteCourseAsync(Id);
             if (searchForCourse != null)
             {
-               
+
                 return NotFound(searchForCourse);
 
             }
-            else {
+            else
+            {
                 return BadRequest(searchForCourse);
-            
-            
+
+
             }
-        
-        
+
+
         }
         [HttpPost("UploadImg")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<ActionResult> UploadImg(IFormFile file) { 
+        public async Task<ActionResult> UploadImg(IFormFile file)
+        {
             await using var stream = file.OpenReadStream();
-            var url=await imageService.SaveCourseImageAsync(stream, file.FileName, file.Length);
+            var url = await imageService.SaveCourseImageAsync(stream, file.FileName, file.Length);
             return Ok(new { imgUrl = url });
 
 

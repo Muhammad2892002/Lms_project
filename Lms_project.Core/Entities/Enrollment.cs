@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lms_project.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,7 +13,10 @@ namespace Lms_project.Core.Entities
 
         public int StudentId { get; set; }
         public Student? StudentNav { get; set; }
+        public EnrollmentStatus EnrollmentStatus { get; set; } = EnrollmentStatus.Pending;
         public DateTime EnrolledAt { get; set; }
+
+        public List<Payment> Payments { get; set; } = [];
 
 
     }

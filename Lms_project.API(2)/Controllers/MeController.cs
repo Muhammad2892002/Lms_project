@@ -16,14 +16,14 @@ namespace Lms_project.API_2_.Controllers
     [Authorize]
     public class MeController(IStudentService _service) : ControllerBase
     {
-    
+
         [HttpGet]
-      
+
         public async Task<ActionResult<StudentResponseDto>> GetStdById()
         {
             int userId;
             int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
-            
+
 
             var result = await _service.GetStdByUserIdAsync(userId);
             return Ok(result);
@@ -31,10 +31,10 @@ namespace Lms_project.API_2_.Controllers
 
 
         }
-     
+
         [HttpPut]
-        
-        public async Task<ActionResult<StudentResponseDto>> EditStd( EditStudentDto std)
+
+        public async Task<ActionResult<StudentResponseDto>> EditStd(EditStudentDto std)
         {
             int userId;
             int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId);
@@ -51,7 +51,7 @@ namespace Lms_project.API_2_.Controllers
 
         }
         [HttpDelete]
-        
+
         public async Task<ActionResult> DeleteStd()
         {
             int userId;

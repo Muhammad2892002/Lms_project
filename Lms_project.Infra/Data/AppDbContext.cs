@@ -14,6 +14,7 @@ namespace Lms_project.Infra.Data
         //public DbSet<Instructor> Instructors => Set<Instructor>();
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<Enrollment> Enrollments=> Set<Enrollment>();
+        public DbSet<Payment> Payments => Set<Payment>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

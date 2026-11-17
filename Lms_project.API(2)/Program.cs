@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(options => {
 
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<IStudentRepository,StudentRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -54,10 +54,16 @@ builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddSingleton<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddHttpClient<ICurrencyService, CurrencyService>(client => {
     client.BaseAddress = new Uri($"{builder.Configuration["ExchangeUrl:BaseUrl"]}{builder.Configuration["ExchangeRate:ApiKey"]}/");
 
 });
+builder.Services.AddHttpClient<IPaymentGateway, PayPalGateway>(client => {
+    client.BaseAddress = new Uri($"{builder.Configuration["PayPal:BaseURL"]}");
+});
+
 
 
 
@@ -73,22 +79,23 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateEnrollmentValidator>(
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 //------------------------------------------------------------------------- JWT Authentication and Authorization Configuration
-var jwt =builder.Configuration.GetSection("jwt").Get<JwtSetting>();
+var jwt = builder.Configuration.GetSection("jwt").Get<JwtSetting>();
 builder.Services.Configure<JwtSetting>(builder.Configuration.GetSection("jwt"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-    options=>options.TokenValidationParameters=new TokenValidationParameters { 
-      ValidateIssuer = true,
-      ValidateAudience=true,
-      ValidateLifetime = true,
+    options => options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audiance,
-        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
-        ClockSkew=TimeSpan.FromMinutes(1)
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+        ClockSkew = TimeSpan.FromMinutes(1)
 
 
     }
-    
+
     );
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(options =>
